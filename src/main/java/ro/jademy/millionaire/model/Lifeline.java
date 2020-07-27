@@ -5,6 +5,7 @@ public class Lifeline {
     private String name;
     private boolean used;
 
+
     public Lifeline(String name) {
         this.name = name;
     }
