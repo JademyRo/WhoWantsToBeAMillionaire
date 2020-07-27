@@ -57,7 +57,6 @@ public class Game {
     }
 
     public void start() {
-
         // TODO
         // show welcome screen
         // optionally: show rules (rounds, lifelines, etc) & commands
@@ -78,36 +77,32 @@ public class Game {
             currentLevel = LEVELS.get(indexLevel);
             if (currentLevel.getDifficultyLevel() == 0) {
                 List<Answer> questionAnswers = askQuestion(difficultyZeroQuestions, currentLevel);
-                gameContinue = answerQuestion(difficultyZeroQuestions, currentLevel, questionAnswers);
+                gameContinue = answerQuestion(difficultyZeroQuestions, questionAnswers);
 
             } else if (currentLevel.getDifficultyLevel() == 1) {
                 List<Answer> questionAnswers = askQuestion(difficultyOneQuestions, currentLevel);
-                gameContinue = answerQuestion(difficultyOneQuestions, currentLevel, questionAnswers);
+                gameContinue = answerQuestion(difficultyOneQuestions, questionAnswers);
 
             } else if (currentLevel.getDifficultyLevel() == 2) {
                 List<Answer> questionAnswers = askQuestion(difficultyTwoQuestions, currentLevel);
-                gameContinue = answerQuestion(difficultyTwoQuestions, currentLevel, questionAnswers);
+                gameContinue = answerQuestion(difficultyTwoQuestions, questionAnswers);
             } else if (currentLevel.getDifficultyLevel() == 3) {
                 List<Answer> questionAnswers = askQuestion(difficultyThreeQuestions, currentLevel);
-                gameContinue = answerQuestion(difficultyThreeQuestions, currentLevel, questionAnswers);
+                gameContinue = answerQuestion(difficultyThreeQuestions, questionAnswers);
                 if (gameContinue) {
                     System.out.println("CONGRATULATIONS, YOU WON : " + currentLevel.getReward() + " !!");
                     gameContinue = false;
                     break;
                 }
-
             } else {
                 System.out.println("No difficulty found for currentLevel");
             }
-
 
             if (gameContinue) {
                 indexLevel++;
                 System.out.println("Proceeding to next level: " + currentLevel.getNumber());
             }
         } while (gameContinue);
-
-
     }
 
     private void showWelcome() {
@@ -134,203 +129,25 @@ public class Game {
     }
 
 
-    public static List<Question> getRandomQuestions(int nrOfQuestions, int difficulty) {
-        // loop through all questions
-        // get all questions of given difficulty
-        // loop through sub-list until nrOfQuestions and select random items by index
-        // return said list
-        List<Question> questionsOfDiff = new ArrayList<>();
-        List<Question> questionsRandom = new ArrayList<>();
-        for (Question question : QuestionProvider.ALL_QUESTIONS) {
-            if (question.getDifficulty() == difficulty) {
-                questionsOfDiff.add(question);
-            }
-        }
-        Random random = new Random();
-        for (int i = 0; i < nrOfQuestions; i++) {
-            int randomIndex = random.nextInt(questionsOfDiff.size());
-            questionsRandom.add(questionsOfDiff.remove(randomIndex));
-        }
-        return questionsRandom;
-    }
-
-
     private List<Answer> askQuestion(List<Question> questionList, Level currentLevel) {
         // ask the question
-
-
-        boolean usedHelp = false;
-
         System.out.println("Prize: " + currentLevel.getReward() + ", Reward Checkpoint: " + currentLevel.getRewardBreakout() + "\n");
         System.out.println(questionList.get(0).getText());
 
         List<Answer> allAnswers = new ArrayList<>();
         allAnswers.addAll(questionList.get(0).getWrongAnswers());
-        int indexCorrectAnswer = random.nextInt(allAnswers.size());
-        allAnswers.add(indexCorrectAnswer, questionList.get(0).getCorrectAnswer());
+        allAnswers.add(random.nextInt(allAnswers.size()), questionList.get(0).getCorrectAnswer());
 
         printAnswers(allAnswers);
 
-
         return allAnswers;
-
-
     }
 
 
-    private boolean answerQuestion(List<Question> questionList, Level currentLevel, List<Answer> allAnswers) {
-        boolean isCorrectAnswer = false;
-        // scan input
-
-        // if answer is correct remove question , and return true.
+    private boolean answerQuestion(List<Question> questionList, List<Answer> allAnswers) {
+        boolean isCorrectAnswer;
         String choice = validInputAnswer(false);
-        switch (choice) {
-            case "1":
-                if (allAnswers.get(0).getText().equals
-                        (questionList.get(0).getCorrectAnswer().getText())) {
-                    isCorrectAnswer = true;
-                    System.out.println("Correct Answer !! \n");
-                    questionList.remove(0);
-                } else {
-                    System.out.println(" WRONG ANSWER !! \n ");
-                    System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                    isCorrectAnswer = false;
-                }
-                break;
-
-            case "2":
-                if (allAnswers.get(1).getText().equals
-                        (questionList.get(0).getCorrectAnswer().getText())) {
-                    isCorrectAnswer = true;
-                    System.out.println("Correct Answer !! \n");
-                    questionList.remove(0);
-                } else {
-                    System.out.println(" WRONG ANSWER !! \n");
-                    System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                    isCorrectAnswer = false;
-                }
-                break;
-
-            case "3":
-                if (allAnswers.get(2).getText().equals
-                        (questionList.get(0).getCorrectAnswer().getText())) {
-                    isCorrectAnswer = true;
-                    System.out.println("Correct Answer ! \n");
-                    questionList.remove(0);
-                } else {
-                    System.out.println(" WRONG ANSWER !! \n");
-                    System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                    isCorrectAnswer = false;
-                }
-                break;
-
-            case "4":
-                if (allAnswers.get(3).getText().equals
-                        (questionList.get(0).getCorrectAnswer().getText())) {
-                    isCorrectAnswer = true;
-                    System.out.println("Correct Answer ! \n");
-                    questionList.remove(0);
-                } else {
-                    System.out.println(" WRONG ANSWER !! \n");
-                    System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                    isCorrectAnswer = false;
-                }
-                break;
-
-            case "H":
-
-                if (lifelines.size() > 0) {
-                    lifelines.remove(0);
-                    int wrongAnswerSize = questionList.get(0).getWrongAnswers().size();
-                    String wrongAnswerString = questionList.get(0).getWrongAnswers().get(random.nextInt(wrongAnswerSize)).getText();
-                    //get indexCorrectAnswer
-                    int indexCorrectAnswer = -1;
-                    for (int i = 0; i < allAnswers.size(); i++) {
-                        if (questionList.get(0).getCorrectAnswer().getText().equals(allAnswers.get(i).getText())) {
-                            indexCorrectAnswer = i;
-                        }
-                    }
-                    //set 50-50 answers
-                    for (int i = 0; i < allAnswers.size(); i++) {
-                        if (allAnswers.get(i).getText().equals(wrongAnswerString) || i == indexCorrectAnswer) {
-                            //empty code block
-                        } else {
-                            allAnswers.set(i, new Answer(""));
-                        }
-                    }
-
-                    System.out.println(questionList.get(0).getText());
-                    printAnswers(allAnswers);
-
-                    choice = validInputAnswer(true);
-                    switch (choice) {
-                        case "1":
-                            if (allAnswers.get(0).getText().equals
-                                    (questionList.get(0).getCorrectAnswer().getText())) {
-                                isCorrectAnswer = true;
-                                System.out.println("Correct Answer !! \n");
-                                questionList.remove(0);
-                            } else {
-                                System.out.println(" WRONG ANSWER !! \n ");
-                                System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                                isCorrectAnswer = false;
-                            }
-                            break;
-
-                        case "2":
-                            if (allAnswers.get(1).getText().equals
-                                    (questionList.get(0).getCorrectAnswer().getText())) {
-                                isCorrectAnswer = true;
-                                System.out.println("Correct Answer !! \n");
-                                questionList.remove(0);
-                            } else {
-                                System.out.println(" WRONG ANSWER !! \n");
-                                System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                                isCorrectAnswer = false;
-                            }
-                            break;
-
-                        case "3":
-                            if (allAnswers.get(2).getText().equals
-                                    (questionList.get(0).getCorrectAnswer().getText())) {
-                                isCorrectAnswer = true;
-                                System.out.println("Correct Answer ! \n");
-                                questionList.remove(0);
-                            } else {
-                                System.out.println(" WRONG ANSWER !! \n");
-                                System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                                isCorrectAnswer = false;
-                            }
-                            break;
-
-                        case "4":
-                            if (allAnswers.get(3).getText().equals
-                                    (questionList.get(0).getCorrectAnswer().getText())) {
-                                isCorrectAnswer = true;
-                                System.out.println("Correct Answer ! \n");
-                                questionList.remove(0);
-                            } else {
-                                System.out.println(" WRONG ANSWER !! \n");
-                                System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                                isCorrectAnswer = false;
-                            }
-                            break;
-
-                        case "Q":
-                            System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                            isCorrectAnswer = false;
-                            break;
-
-                    }
-                }
-                break;
-
-            case "Q":
-                System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
-                isCorrectAnswer = false;
-                break;
-        }
-
+        isCorrectAnswer = inputSwitchCase(choice, false, allAnswers, questionList);
 
         return isCorrectAnswer;
     }
@@ -348,39 +165,38 @@ public class Game {
             }
 
             temp = sc.nextLine();
-
-            // TODO maybe switchcase?
-            if (temp.equals("1")) {
-                temp = "1";
-                isValid = true;
-            } else if (temp.equals("2")) {
-                temp = "2";
-                isValid = true;
-            } else if (temp.equals("3")) {
-                temp = "3";
-                isValid = true;
-            } else if (temp.equals("4")) {
-                temp = "4";
-                isValid = true;
-
-            } else if (temp.equalsIgnoreCase("H")) {
+            switch (temp) {
+                case "1":
+                    temp = "1";
+                    isValid = true;
+                    break;
+                case "2":
+                    temp = "2";
+                    isValid = true;
+                    break;
+                case "3":
+                    temp = "3";
+                    isValid = true;
+                    break;
+                case "4":
+                    temp = "4";
+                    isValid = true;
+                    break;
+            }
+            if (temp.equalsIgnoreCase("H")) {
                 if (helpUsed || lifelines.size() == 0) {
                     //empty code block
                 } else {
                     temp = "H";
                     isValid = true;
                 }
-
             } else if (temp.equalsIgnoreCase("Q")) {
                 temp = "Q";
                 isValid = true;
             }
         } while (!isValid);
-
-
         return temp;
     }
-
 
     private String validInputYesOrNo() {
         boolean isValid = false;
@@ -422,5 +238,73 @@ public class Game {
 
     }
 
+    private boolean inputCase(int position, List<Answer> allAnswers, List<Question> questionList) {
+        boolean isCorrectAnswer;
+        if (allAnswers.get(position).getText().equals
+                (questionList.get(0).getCorrectAnswer().getText())) {
+            isCorrectAnswer = true;
+            System.out.println("Correct Answer !! \n");
+            questionList.remove(0);
+        } else {
+            System.out.println(" WRONG ANSWER !! \n ");
+            System.out.println("Reward Checkpoint: " + currentLevel.getRewardBreakout());
+            isCorrectAnswer = false;
+        }
+        return isCorrectAnswer;
+    }
+
+
+    private boolean inputSwitchCase(String choice, boolean helpUsed, List<Answer> allAnswers, List<Question> questionList) {
+        boolean isCorrectAnswer = false;
+        switch (choice) {
+            case "1":
+                isCorrectAnswer = inputCase(0, allAnswers, questionList);
+                break;
+            case "2":
+                isCorrectAnswer = inputCase(1, allAnswers, questionList);
+                break;
+            case "3":
+                isCorrectAnswer = inputCase(2, allAnswers, questionList);
+                break;
+            case "4":
+                isCorrectAnswer = inputCase(3, allAnswers, questionList);
+                break;
+            case "H":
+                if (!helpUsed && lifelines.size() > 0) {
+                    lifelines.remove(0);
+                    int wrongAnswerSize = questionList.get(0).getWrongAnswers().size();
+                    String wrongAnswerString = questionList.get(0).getWrongAnswers().get(random.nextInt(wrongAnswerSize)).getText();
+                    //get indexCorrectAnswer
+                    int indexCorrectAnswer = -1;
+                    for (int i = 0; i < allAnswers.size(); i++) {
+                        if (questionList.get(0).getCorrectAnswer().getText().equals(allAnswers.get(i).getText())) {
+                            indexCorrectAnswer = i;
+                        }
+                    }
+                    //set 50-50 answers
+                    for (int i = 0; i < allAnswers.size(); i++) {
+                        if (allAnswers.get(i).getText().equals(wrongAnswerString) || i == indexCorrectAnswer) {
+                            //empty code block
+                        } else {
+                            allAnswers.set(i, new Answer(""));
+                        }
+                    }
+
+                    System.out.println(questionList.get(0).getText());
+                    printAnswers(allAnswers);
+
+                    choice = validInputAnswer(true);
+                    isCorrectAnswer = inputSwitchCase(choice, true, allAnswers, questionList);
+                }
+                break;
+
+            case "Q":
+                System.out.println("Reward: " + currentLevel.getReward());
+                isCorrectAnswer = false;
+                break;
+        }
+
+        return isCorrectAnswer;
+    }
 
 }
